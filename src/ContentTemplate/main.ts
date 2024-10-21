@@ -25,6 +25,8 @@ import {
 
 import { SettingsForm } from "./SettingsForm";
 
+import content from "../../content.json";
+
 // Should match the capabilities which you defined in pbconfig.ts
 type ContentTemplateImplementation = SettingsFormProviding &
   Extension &
@@ -67,13 +69,25 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     //Template Discover section, needs to be populated via its own method
     Application.registerDiscoverSection(
       {
-        id: "discover-section-template",
-        title: "Discover Section Template",
+        id: "discover-section-template1",
+        title: "Discover Section Template 1",
         type: DiscoverSectionType.simpleCarousel,
       },
       Application.Selector(
         this as ContentTemplateExtension,
-        "getDiscoverSectionTemplate",
+        "getDiscoverSectionTemplate1",
+      ),
+    );
+
+    Application.registerDiscoverSection(
+      {
+        id: "discover-section-template2",
+        title: "Discover Section Template 2",
+        type: DiscoverSectionType.simpleCarousel,
+      },
+      Application.Selector(
+        this as ContentTemplateExtension,
+        "getDiscoverSectionTemplate2",
       ),
     );
 
@@ -100,151 +114,203 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     query: SearchQuery,
     metadata?: number,
   ): Promise<PagedResults<SearchResultItem>> {
-    void query;
     void metadata;
 
-    return {
-      items: [
-        {
-          mangaId: "1",
-          title: "Template Title 1",
-          subtitle: "Template Title 1",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-        {
-          mangaId: "2",
-          title: "Template Title 2",
-          subtitle: "Template Title 2",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-        {
-          mangaId: "3",
-          title: "Template Title 3",
-          subtitle: "Template Title 3",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-        {
-          mangaId: "4",
-          title: "Template Title 4",
-          subtitle: "Template Title 4",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-      ],
-    };
+    const results: PagedResults<SearchResultItem> = { items: [] };
+
+    for (let i = 0; i < content.length; i++) {
+      if (query.title.indexOf(content[i].primaryTitle)) {
+        const result: SearchResultItem = {
+          mangaId: content[i].titleId,
+          title: content[i].primaryTitle,
+          subtitle: content[i].secondaryTitles[0]
+            ? content[i].secondaryTitles[0]
+            : "",
+          imageUrl: content[i].thumbnailUrl,
+        };
+
+        results.items.push(result);
+      } else {
+        for (let j = 0; j < content[i].secondaryTitles.length; j++) {
+          if (query.title.indexOf(content[i].secondaryTitles[j])) {
+            const result: SearchResultItem = {
+              mangaId: content[i].titleId,
+              title: content[i].primaryTitle,
+              subtitle: content[i].secondaryTitles[0]
+                ? content[i].secondaryTitles[0]
+                : "",
+              imageUrl: content[i].thumbnailUrl,
+            };
+
+            results.items.push(result);
+            break;
+          }
+        }
+      }
+    }
+
+    return results;
   }
 
-  // Populates the discover section
-  async getDiscoverSectionTemplate(
+  // Populates the first discover section
+  async getDiscoverSectionTemplate1(
     section: DiscoverSection,
     metadata: number | undefined,
   ): Promise<PagedResults<DiscoverSectionItem>> {
     void section;
     void metadata;
 
-    return {
-      items: [
-        {
-          mangaId: "1",
-          title: "Template Title 1",
-          subtitle: "Template Title 001",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-        {
-          mangaId: "2",
-          title: "Template Title 2",
-          subtitle: "Template Title 002",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-        {
-          mangaId: "3",
-          title: "Template Title 3",
-          subtitle: "Template Title 003",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-        {
-          mangaId: "4",
-          title: "Template Title 4",
-          subtitle: "Template Title 004",
-          imageUrl: "https://placehold.co/200x300.png",
-        },
-      ],
-    };
+    const results: PagedResults<SearchResultItem> = { items: [] };
+
+    for (let i = 0; i < content.length / 2; i++) {
+      const result: SearchResultItem = {
+        mangaId: content[i].titleId,
+        title: content[i].primaryTitle,
+        subtitle: content[i].secondaryTitles[0]
+          ? content[i].secondaryTitles[0]
+          : "",
+        imageUrl: content[i].thumbnailUrl,
+      };
+
+      results.items.push(result);
+    }
+
+    return results;
   }
 
-  // Populate the manga details
+  // Populates the second discover section
+  async getDiscoverSectionTemplate2(
+    section: DiscoverSection,
+    metadata: number | undefined,
+  ): Promise<PagedResults<DiscoverSectionItem>> {
+    void section;
+    void metadata;
+
+    const results: PagedResults<SearchResultItem> = { items: [] };
+
+    for (let i = content.length / 2; i < content.length; i++) {
+      const result: SearchResultItem = {
+        mangaId: content[i].titleId,
+        title: content[i].primaryTitle,
+        subtitle: content[i].secondaryTitles[0]
+          ? content[i].secondaryTitles[0]
+          : "",
+        imageUrl: content[i].thumbnailUrl,
+      };
+
+      results.items.push(result);
+    }
+
+    return results;
+  }
+
+  // Populates the title details
   async getMangaDetails(mangaId: string): Promise<SourceManga> {
-    return {
-      mangaId,
-      mangaInfo: {
-        thumbnailUrl: "https://placehold.co/200x300.png",
-        synopsis: "This is a synopsis.",
-        primaryTitle: "Template Title 1",
-        secondaryTitles: ["Template Title 001"],
-        contentRating: ContentRating.EVERYONE,
-        status: "Finished",
-        author: "Celarye",
-        bannerUrl: "https://placehold.co/600x400.png",
-        rating: 1,
-        tagGroups: [
-          {
-            id: "tags",
-            title: "Tags",
-            tags: [{ id: "tag-template", title: "Tag Template" } as Tag],
-          } as TagSection,
-        ],
-        artworkUrls: [],
-      },
-    };
+    for (let i = 0; i < content.length; i++) {
+      if (mangaId == content[i].titleId) {
+        let contentRating: ContentRating;
+        switch (content[i].contentRating) {
+          case "EVERYONE":
+            contentRating = ContentRating.EVERYONE;
+            break;
+          case "MATURE":
+            contentRating = ContentRating.MATURE;
+            break;
+          case "ADULT":
+            contentRating = ContentRating.ADULT;
+            break;
+          default:
+            contentRating = ContentRating.EVERYONE;
+            break;
+        }
+
+        const genres: TagSection = { id: "genres", title: "Genres", tags: [] };
+        for (let j = 0; j < content[i].genres.length; j++) {
+          const genre: Tag = {
+            id: content[i].genres[j].toLowerCase().replace(" ", "-"),
+            title: content[i].genres[j],
+          };
+          genres.tags.push(genre);
+        }
+
+        const tags: TagSection = { id: "tags", title: "Tags", tags: [] };
+        for (let j = 0; j < content[i].tags.length; j++) {
+          const tag: Tag = {
+            id: content[i].tags[j].toLowerCase().replace(" ", "-"),
+            title: content[i].tags[j],
+          };
+          tags.tags.push(tag);
+        }
+
+        return {
+          mangaId: content[i].titleId,
+          mangaInfo: {
+            thumbnailUrl: content[i].thumbnailUrl,
+            synopsis: content[i].synopsis,
+            primaryTitle: content[i].primaryTitle,
+            secondaryTitles: content[i].secondaryTitles,
+            contentRating,
+            status: content[i].status,
+            author: content[i].author,
+            rating: content[i].rating,
+            tagGroups: [genres, tags],
+            artworkUrls: [],
+          },
+        };
+      }
+    }
+    throw new Error("No title with this id exists");
   }
 
-  // Populate the chapter list
+  // Populates the chapter list
   async getChapters(
     sourceManga: SourceManga,
     sinceDate?: Date,
   ): Promise<Chapter[]> {
     void sinceDate;
 
-    return [
-      {
-        chapterId: "1",
-        sourceManga,
-        langCode: "EN",
-        chapNum: 1,
-      },
-      {
-        chapterId: "2",
-        sourceManga,
-        langCode: "EN",
-        chapNum: 2,
-      },
-      {
-        chapterId: "3",
-        sourceManga,
-        langCode: "EN",
-        chapNum: 3,
-      },
-      {
-        chapterId: "4",
-        sourceManga,
-        langCode: "EN",
-        chapNum: 4,
-      },
-    ];
+    for (let i = 0; i < content.length; i++) {
+      if (sourceManga.mangaId == content[i].titleId) {
+        const chapters: Chapter[] = [];
+
+        for (let j = 0; j < content[i].chapters.length; j++) {
+          const chapter: Chapter = {
+            chapterId: content[i].chapters[j].chapterId,
+            sourceManga,
+            langCode: content[i].chapters[j].languageCode,
+            chapNum: content[i].chapters[j].chapterNumber,
+            title: content[i].primaryTitle,
+            volume: 1,
+          };
+
+          chapters.push(chapter);
+        }
+
+        return chapters;
+      }
+    }
+    throw new Error("No title with this id exists");
   }
 
-  // Populate a chapter
+  // Populates a chapter
   async getChapterDetails(chapter: Chapter): Promise<ChapterDetails> {
-    void chapter;
+    for (let i = 0; i < content.length; i++) {
+      if (chapter.sourceManga.mangaId == content[i].titleId) {
+        for (let j = 0; j < content[i].chapters.length; j++) {
+          if (chapter.chapterId == content[i].chapters[j].chapterId) {
+            const chapterDetails: ChapterDetails = {
+              id: chapter.chapterId,
+              mangaId: chapter.sourceManga.mangaId,
+              pages: content[i].chapters[j].pages,
+            };
 
-    return {
-      id: "1",
-      mangaId: "1",
-      pages: [
-        "https://placehold.co/800x1200.png",
-        "https://placehold.co/800x1200.png",
-        "https://placehold.co/800x1200.png",
-      ],
-    };
+            return chapterDetails;
+          }
+        }
+        throw new Error("No chapter with this id exists");
+      }
+    }
+    throw new Error("No title with this id exists");
   }
 }
 
