@@ -1,32 +1,30 @@
-name: "Bundle and Publish Sources"
+name: Build and Deploy
 
-on: ["push", "workflow_dispatch"]
+on: [push, pull_request, workflow_dispatch]
 
 permissions:
   contents: write
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{github.ref}}-${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Bundle and Publish Sources
+  build-deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
     steps:
       - name: Checkout Branch
         uses: actions/checkout@v4
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          node-version: 20
+          cache: npm
       - run: npm ci
       - run: npm run cicd
       - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: bundles
