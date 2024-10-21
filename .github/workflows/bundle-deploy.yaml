@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Bundle and Deploy
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-deploy:
-    name: Build and Deploy
+  bundle-deploy:
+    name: Bundle and Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Branch
