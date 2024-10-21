@@ -2,6 +2,19 @@
 
 Extension templates repository for Paperback.
 
+This includes the following:
+
+- TypeScript config
+- ESLint config
+- Prettier config
+- nodemon development setup
+- Husky pre-push hook
+- GitHub "Build and Deploy" Action
+- A basic example content extension
+- A basic example tracker extension
+
+All extension repositories in the Paperback Community GitHub Organization use this one as a base.
+
 ## Templates
 
 ### Content Template
