@@ -66,7 +66,7 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     this.mainRateLimiter.registerInterceptor();
     this.mainInterceptor.registerInterceptor();
 
-    //Template Discover section, needs to be populated via its own method
+    // First template discover section, needs to be populated via its own method
     Application.registerDiscoverSection(
       {
         id: "discover-section-template1",
@@ -79,6 +79,7 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
       ),
     );
 
+    // Second template discover section, needs to be populated via its own method
     Application.registerDiscoverSection(
       {
         id: "discover-section-template2",
@@ -96,10 +97,10 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
       id: "search-filter-template",
       type: "dropdown",
       options: [
-        { id: "A", value: "A" },
-        { id: "B", value: "B" },
+        { id: "include", value: "include" },
+        { id: "exclude", value: "exclude" },
       ],
-      value: "A",
+      value: "Exclude",
       title: "Search Filter Template",
     });
   }
@@ -107,49 +108,6 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
   // Implements the settings form, check SettingsForm.ts for more info
   async getSettingsForm(): Promise<Form> {
     return new SettingsForm();
-  }
-
-  // Populates search
-  async getSearchResults(
-    query: SearchQuery,
-    metadata?: number,
-  ): Promise<PagedResults<SearchResultItem>> {
-    void metadata;
-
-    const results: PagedResults<SearchResultItem> = { items: [] };
-
-    for (let i = 0; i < content.length; i++) {
-      if (query.title.indexOf(content[i].primaryTitle)) {
-        const result: SearchResultItem = {
-          mangaId: content[i].titleId,
-          title: content[i].primaryTitle,
-          subtitle: content[i].secondaryTitles[0]
-            ? content[i].secondaryTitles[0]
-            : "",
-          imageUrl: content[i].thumbnailUrl,
-        };
-
-        results.items.push(result);
-      } else {
-        for (let j = 0; j < content[i].secondaryTitles.length; j++) {
-          if (query.title.indexOf(content[i].secondaryTitles[j])) {
-            const result: SearchResultItem = {
-              mangaId: content[i].titleId,
-              title: content[i].primaryTitle,
-              subtitle: content[i].secondaryTitles[0]
-                ? content[i].secondaryTitles[0]
-                : "",
-              imageUrl: content[i].thumbnailUrl,
-            };
-
-            results.items.push(result);
-            break;
-          }
-        }
-      }
-    }
-
-    return results;
   }
 
   // Populates the first discover section
@@ -163,18 +121,18 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     const results: PagedResults<SearchResultItem> = { items: [] };
 
     for (let i = 0; i < content.length / 2; i++) {
-      const result: SearchResultItem = {
-        mangaId: content[i].titleId,
-        title: content[i].primaryTitle,
-        subtitle: content[i].secondaryTitles[0]
-          ? content[i].secondaryTitles[0]
-          : "",
-        imageUrl: content[i].thumbnailUrl,
-      };
-
-      results.items.push(result);
+      if (content[i].titleId) {
+        const result: SearchResultItem = {
+          mangaId: content[i].titleId,
+          title: content[i].primaryTitle
+            ? content[i].primaryTitle
+            : "Unknown Title",
+          subtitle: content[i].secondaryTitles[0],
+          imageUrl: content[i].thumbnailUrl ? content[i].thumbnailUrl : "",
+        };
+        results.items.push(result);
+      }
     }
-
     return results;
   }
 
@@ -189,18 +147,82 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     const results: PagedResults<SearchResultItem> = { items: [] };
 
     for (let i = content.length / 2; i < content.length; i++) {
-      const result: SearchResultItem = {
-        mangaId: content[i].titleId,
-        title: content[i].primaryTitle,
-        subtitle: content[i].secondaryTitles[0]
-          ? content[i].secondaryTitles[0]
-          : "",
-        imageUrl: content[i].thumbnailUrl,
-      };
-
-      results.items.push(result);
+      if (content[i].titleId) {
+        const result: SearchResultItem = {
+          mangaId: content[i].titleId,
+          title: content[i].primaryTitle
+            ? content[i].primaryTitle
+            : "Unknown Title",
+          subtitle: content[i].secondaryTitles[0],
+          imageUrl: content[i].thumbnailUrl ? content[i].thumbnailUrl : "",
+        };
+        results.items.push(result);
+      }
     }
+    return results;
+  }
 
+  // Populates search
+  async getSearchResults(
+    query: SearchQuery,
+    metadata?: number,
+  ): Promise<PagedResults<SearchResultItem>> {
+    void metadata;
+
+    const results: PagedResults<SearchResultItem> = { items: [] };
+
+    for (let i = 0; i < content.length; i++) {
+      if (
+        (content[i].primaryTitle
+          .toLowerCase()
+          .indexOf(query.title.toLowerCase()) != -1 &&
+          query.filters[0].value == "include") ||
+        (content[i].primaryTitle
+          .toLowerCase()
+          .indexOf(query.title.toLowerCase()) == -1 &&
+          query.filters[0].value == "exclude")
+      ) {
+        if (content[i].titleId) {
+          const result: SearchResultItem = {
+            mangaId: content[i].titleId,
+            title: content[i].primaryTitle
+              ? content[i].primaryTitle
+              : "Unknown Title",
+            subtitle: content[i].secondaryTitles[0],
+            imageUrl: content[i].thumbnailUrl ? content[i].thumbnailUrl : "",
+          };
+          results.items.push(result);
+        }
+      } else {
+        for (let j = 0; j < content[i].secondaryTitles.length; j++) {
+          if (
+            (content[i].secondaryTitles[j]
+              .toLowerCase()
+              .indexOf(query.title.toLowerCase()) != -1 &&
+              query.filters[0].value == "include") ||
+            (content[i].secondaryTitles[j]
+              .toLowerCase()
+              .indexOf(query.title.toLowerCase()) == -1 &&
+              query.filters[0].value == "exclude")
+          ) {
+            if (content[i].titleId) {
+              const result: SearchResultItem = {
+                mangaId: content[i].titleId,
+                title: content[i].primaryTitle
+                  ? content[i].primaryTitle
+                  : "Unknown Title",
+                subtitle: content[i].secondaryTitles[0],
+                imageUrl: content[i].thumbnailUrl
+                  ? content[i].thumbnailUrl
+                  : "",
+              };
+              results.items.push(result);
+            }
+            break;
+          }
+        }
+      }
+    }
     return results;
   }
 
@@ -243,18 +265,26 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
         }
 
         return {
-          mangaId: content[i].titleId,
+          mangaId,
           mangaInfo: {
-            thumbnailUrl: content[i].thumbnailUrl,
-            synopsis: content[i].synopsis,
-            primaryTitle: content[i].primaryTitle,
-            secondaryTitles: content[i].secondaryTitles,
+            thumbnailUrl: content[i].thumbnailUrl
+              ? content[i].thumbnailUrl
+              : "",
+            synopsis: content[i].synopsis
+              ? content[i].synopsis
+              : "No synopsis.",
+            primaryTitle: content[i].primaryTitle
+              ? content[i].primaryTitle
+              : "Unknown Title",
+            secondaryTitles: content[i].secondaryTitles
+              ? content[i].secondaryTitles
+              : [],
             contentRating,
             status: content[i].status,
             author: content[i].author,
             rating: content[i].rating,
             tagGroups: [genres, tags],
-            artworkUrls: [],
+            artworkUrls: [content[i].thumbnailUrl],
           },
         };
       }
@@ -267,6 +297,7 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     sourceManga: SourceManga,
     sinceDate?: Date,
   ): Promise<Chapter[]> {
+    // Can be used to only return new chapters. Not used here, instead the whole chapter list gets returned
     void sinceDate;
 
     for (let i = 0; i < content.length; i++) {
@@ -274,25 +305,29 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
         const chapters: Chapter[] = [];
 
         for (let j = 0; j < content[i].chapters.length; j++) {
-          const chapter: Chapter = {
-            chapterId: content[i].chapters[j].chapterId,
-            sourceManga,
-            langCode: content[i].chapters[j].languageCode,
-            chapNum: content[i].chapters[j].chapterNumber,
-            title: content[i].primaryTitle,
-            volume: 1,
-          };
-
-          chapters.push(chapter);
+          if (content[i].chapters[j].chapterId) {
+            const chapter: Chapter = {
+              chapterId: content[i].chapters[j].chapterId,
+              sourceManga,
+              langCode: content[i].chapters[j].languageCode
+                ? content[i].chapters[j].languageCode
+                : "EN",
+              chapNum: content[i].chapters[j].chapterNumber
+                ? content[i].chapters[j].chapterNumber
+                : j + 1,
+              title: content[i].primaryTitle,
+              volume: content[i].chapters[j].volumeNumber,
+            };
+            chapters.push(chapter);
+          }
         }
-
         return chapters;
       }
     }
     throw new Error("No title with this id exists");
   }
 
-  // Populates a chapter
+  // Populates a chapter with images
   async getChapterDetails(chapter: Chapter): Promise<ChapterDetails> {
     for (let i = 0; i < content.length; i++) {
       if (chapter.sourceManga.mangaId == content[i].titleId) {
@@ -303,7 +338,6 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
               mangaId: chapter.sourceManga.mangaId,
               pages: content[i].chapters[j].pages,
             };
-
             return chapterDetails;
           }
         }
