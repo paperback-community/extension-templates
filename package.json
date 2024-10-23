@@ -31,7 +31,7 @@
     "logcat": "paperback-cli logcat",
     "nodemon": "nodemon -w \"./src/**/*.ts\" -e \"ts\" -x \"npm run serve\"",
     "prepare": "husky",
-    "cicd": "run-s tsc eslint-check prettier-check bundle"
+    "test": "run-s tsc eslint-check prettier-check bundle"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.0",
