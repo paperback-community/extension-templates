@@ -1,3 +1,5 @@
+// TODO: Add English name to title view, additional info?
+
 import {
   BasicRateLimiter,
   Chapter,
@@ -6,6 +8,7 @@ import {
   ContentRating,
   DiscoverSection,
   DiscoverSectionItem,
+  DiscoverSectionProviding,
   DiscoverSectionType,
   Extension,
   Form,
@@ -22,14 +25,15 @@ import {
   Tag,
   TagSection,
 } from "@paperback/types";
-
-import { SettingsForm } from "./SettingsForm";
-
+// Template content
 import content from "../../content.json";
+// Extension settings file
+import { SettingsForm } from "./SettingsForm";
 
 // Should match the capabilities which you defined in pbconfig.ts
 type ContentTemplateImplementation = SettingsFormProviding &
   Extension &
+  DiscoverSectionProviding &
   SearchResultsProviding &
   MangaProviding &
   ChapterProviding;
@@ -66,32 +70,6 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     this.mainRateLimiter.registerInterceptor();
     this.mainInterceptor.registerInterceptor();
 
-    // First template discover section, needs to be populated via its own method
-    Application.registerDiscoverSection(
-      {
-        id: "discover-section-template1",
-        title: "Discover Section Template 1",
-        type: DiscoverSectionType.simpleCarousel,
-      },
-      Application.Selector(
-        this as ContentTemplateExtension,
-        "getDiscoverSectionTemplate1",
-      ),
-    );
-
-    // Second template discover section, needs to be populated via its own method
-    Application.registerDiscoverSection(
-      {
-        id: "discover-section-template2",
-        title: "Discover Section Template 2",
-        type: DiscoverSectionType.simpleCarousel,
-      },
-      Application.Selector(
-        this as ContentTemplateExtension,
-        "getDiscoverSectionTemplate2",
-      ),
-    );
-
     // Template search filter
     Application.registerSearchFilter({
       id: "search-filter-template",
@@ -110,56 +88,68 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     return new SettingsForm();
   }
 
-  // Populates the first discover section
-  async getDiscoverSectionTemplate1(
-    section: DiscoverSection,
-    metadata: number | undefined,
-  ): Promise<PagedResults<DiscoverSectionItem>> {
-    void section;
-    void metadata;
+  async getDiscoverSections(): Promise<DiscoverSection[]> {
+    // First template discover section, gets populated by the getDiscoverSectionItems method
+    const discover_section_template1: DiscoverSection = {
+      id: "discover-section-template1",
+      title: "Discover Section Template 1",
+      subtitle: "This is a template",
+      type: DiscoverSectionType.prominentCarousel,
+    };
 
-    const results: PagedResults<SearchResultItem> = { items: [] };
+    // Second template discover section, gets populated by the getDiscoverSectionItems method
+    const discover_section_template2: DiscoverSection = {
+      id: "discover-section-template2",
+      title: "Discover Section Template 2",
+      subtitle: "This is another template",
+      type: DiscoverSectionType.simpleCarousel,
+    };
 
-    for (let i = 0; i < content.length / 2; i++) {
-      if (content[i].titleId) {
-        const result: SearchResultItem = {
-          mangaId: content[i].titleId,
-          title: content[i].primaryTitle
-            ? content[i].primaryTitle
-            : "Unknown Title",
-          subtitle: content[i].secondaryTitles[0],
-          imageUrl: content[i].thumbnailUrl ? content[i].thumbnailUrl : "",
-        };
-        results.items.push(result);
-      }
-    }
-    return results;
+    return [discover_section_template1, discover_section_template2];
   }
 
-  // Populates the second discover section
-  async getDiscoverSectionTemplate2(
+  // Populates both the discover sections
+  async getDiscoverSectionItems(
     section: DiscoverSection,
     metadata: number | undefined,
   ): Promise<PagedResults<DiscoverSectionItem>> {
-    void section;
     void metadata;
 
-    const results: PagedResults<SearchResultItem> = { items: [] };
+    let i: number;
+    let j: number;
+    let type: string;
+    switch (section.id) {
+      case "discover-section-template1":
+        i = 0;
+        j = content.length / 2;
+        type = "prominentCarouselItem";
+        break;
+      case "discover-section-template2":
+        i = content.length / 2;
+        j = content.length / 2;
+        type = "simpleCarouselItem";
+        break;
+      default:
+        i = 0;
+        j = content.length;
+        type = "simpleCarouselItem";
+        break;
+    }
 
-    for (let i = content.length / 2; i < content.length; i++) {
-      if (content[i].titleId) {
-        const result: SearchResultItem = {
+    return {
+      items: Array.from(Array(j)).map(() => {
+        i++;
+        return {
           mangaId: content[i].titleId,
           title: content[i].primaryTitle
             ? content[i].primaryTitle
             : "Unknown Title",
           subtitle: content[i].secondaryTitles[0],
           imageUrl: content[i].thumbnailUrl ? content[i].thumbnailUrl : "",
-        };
-        results.items.push(result);
-      }
-    }
-    return results;
+          type: type,
+        } as DiscoverSectionItem;
+      }),
+    };
   }
 
   // Populates search

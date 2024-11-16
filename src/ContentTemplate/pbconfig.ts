@@ -1,8 +1,8 @@
-import { SourceIntents, ContentRating, SourceInfo } from "@paperback/types";
+import { ContentRating, SourceInfo, SourceIntents } from "@paperback/types";
 
 export default {
   name: "Content Template",
-  description: "Content template extension for Paperback.",
+  description: "Content template extension",
   version: "0.9.0",
   icon: "icon.png",
   language: "English",
@@ -24,4 +24,4 @@ export default {
       github: "https://github.com/Celarye",
     },
   ],
-} as SourceInfo;
+} satisfies SourceInfo;
