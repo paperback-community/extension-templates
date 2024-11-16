@@ -11,4 +11,5 @@ export default {
   arrowParens: "always",
   endOfLine: "lf",
   embeddedLanguageFormatting: "auto",
+  plugins: ["@ianvs/prettier-plugin-sort-imports"],
 };
