@@ -1,6 +1,6 @@
-# Extension Templates
+# Template Extensions
 
-Extension templates repository for Paperback.
+Paperback extensions designed as templates to help developers get started quickly.
 
 This includes the following:
 
@@ -13,7 +13,7 @@ This includes the following:
 - A basic example content extension
 - A basic example tracker extension
 
-All extension repositories in the Paperback Community GitHub Organization use this one as a base.
+All extension repositories in the Paperback Community GitHub Organization use this one as their base template.
 
 ## Templates
 
