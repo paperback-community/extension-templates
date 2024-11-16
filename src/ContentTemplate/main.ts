@@ -129,15 +129,10 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
         j = content.length / 2;
         type = "simpleCarouselItem";
         break;
-      default:
-        i = 0;
-        j = content.length;
-        type = "simpleCarouselItem";
-        break;
     }
 
     return {
-      items: Array.from(Array(j)).map(() => {
+      items: Array.from(Array(j!)).map(() => {
         i++;
         return {
           mangaId: content[i].titleId,
