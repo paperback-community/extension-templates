@@ -116,25 +116,21 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
     void metadata;
 
     let i: number;
-    let j: number;
     let type: string;
     switch (section.id) {
       case "discover-section-template1":
         i = 0;
-        j = content.length / 2;
         type = "prominentCarouselItem";
         break;
       case "discover-section-template2":
         i = content.length / 2;
-        j = content.length / 2;
         type = "simpleCarouselItem";
         break;
     }
 
     return {
-      items: Array.from(Array(j!)).map(() => {
-        i++;
-        return {
+      items: Array.from(Array(content.length / 2)).map(() => {
+        const result = {
           mangaId: content[i].titleId,
           title: content[i].primaryTitle
             ? content[i].primaryTitle
@@ -143,6 +139,8 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
           imageUrl: content[i].thumbnailUrl ? content[i].thumbnailUrl : "",
           type: type,
         } as DiscoverSectionItem;
+        ++i;
+        return result;
       }),
     };
   }
