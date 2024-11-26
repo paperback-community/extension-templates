@@ -5,7 +5,7 @@ export default {
   description: "Content template extension",
   version: "0.9.0",
   icon: "icon.png",
-  language: "English",
+  language: "en",
   contentRating: ContentRating.EVERYONE,
   badges: [
     { label: "Template", textColor: "#FFFFFF", backgroundColor: "#F64B4B" },
