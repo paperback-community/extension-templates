@@ -1,0 +1,5 @@
+# Ignore template extensions
+src
+
+# Ignore the Template Sync Initiation action
+.github/workflows/template-sync-initiation.yaml
