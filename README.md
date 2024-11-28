@@ -4,12 +4,14 @@ Paperback extensions designed as templates to help developers get started quickl
 
 This includes the following:
 
+- Package config
 - TypeScript config
 - ESLint config
 - Prettier config
 - nodemon development setup
 - Husky pre-push hook
-- GitHub "Build and Deploy" Action
+- GitHub CI/CD Actions
+- VSCode config files (settings + extensions)
 - A basic example content extension
 - A basic example tracker extension
 
