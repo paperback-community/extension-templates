@@ -17,6 +17,8 @@
     "url": "https://github.com/paperback-community/extension-templates/issues"
   },
   "homepage": "https://github.com/paperback-community/extension-templates#readme",
+  "repositoryName": "Extension Templates",
+  "repositoryDescription": "Extension templates repository.",
   "private": true,
   "type": "module",
   "scripts": {
