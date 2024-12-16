@@ -8,6 +8,7 @@ This includes the following:
 - TypeScript config
 - ESLint config
 - Prettier config
+- Dependabot config
 - nodemon development setup
 - Husky pre-push hook
 - GitHub CI/CD Actions
