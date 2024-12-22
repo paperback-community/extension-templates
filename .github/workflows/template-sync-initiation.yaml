@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   template-sync-initiation:
-    if: ${{ github.repository }} == 'paperback-community/template-extensions'
+    if: ${{ github.repository == "paperback-community/template-extensions" }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
