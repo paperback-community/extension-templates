@@ -21,6 +21,7 @@ jobs:
             paperback-community/tracker-extensions,
             paperback-community/madara-extensions,
             paperback-community/webtoon-extensions,
+            paperback-community/mangastream-extensions,
           ]
     steps:
       - name: Dispatch Workflow
