@@ -3,7 +3,8 @@ name: Template Sync Initiation
 on:
   push:
     branches:
-      - master
+      - "*.*/stable"
+      - "*.*/testing"
 
 concurrency:
   group: ${{ github.workflow }}
