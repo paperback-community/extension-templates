@@ -26,11 +26,13 @@
     "lint:check": "eslint",
     "format": "prettier --write '**/*{.md,.yaml,.json,.js,.ts}'",
     "format:check": "prettier --check '**/*{.md,.yaml,.json,.js,.ts}'",
+    "tools": "rm -rf tools && tsc src/tools/**.ts --outDir tools --target ESNext --module ESNext --moduleResolution bundler --strict true --forceConsistentCasingInFileNames true --skipLibCheck true && node **/tools.js --write",
+    "tools:check": "rm -rf tools && tsc src/tools/**.ts --outDir tools --target ESNext --module ESNext --moduleResolution bundler --strict true --forceConsistentCasingInFileNames true --skipLibCheck true && node **/tools.js",
     "bundle": "paperback-cli bundle",
     "serve": "paperback-cli serve",
     "logcat": "paperback-cli logcat",
     "dev": "nodemon -w \"./src/**/*.ts\" -e \"ts\" -x \"npm run serve\"",
-    "test": "tsc --noEmit && npm run lint:check && npm run format:check && npm run bundle",
+    "test": "tsc --project tsconfig.json --noEmit && npm run lint:check && npm run format:check && npm run bundle",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -46,5 +48,8 @@
     "prettier": "^3.4.2",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
+  },
+  "dependencies": {
+    "@types/node": "^22.10.10"
   }
 }
