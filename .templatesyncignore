@@ -1,5 +1,6 @@
 .github/workflows/template-sync-initiation.yaml
-src
+/src
 package-lock.json
 README.md
 content.json
+
