@@ -3,8 +3,8 @@ name: Bundle and Deploy
 on:
   push:
     branches:
-      - "*.*/stable"
-      - "*.*/testing"
+      - "*.*/*"
+      - "*.*/*"
 
 permissions:
   contents: write
