@@ -2,54 +2,42 @@ import { argv } from "node:process";
 import contentTemplateTool from "./ContentTemplate/tool.js";
 
 async function run(args: string[]): Promise<void> {
-  let all = false;
-  let write = false;
+  args = args.slice(2);
 
-  args.shift();
-  args.shift();
+  const flags = new Set<string>();
+  const options: string[] = [];
 
-  for (let i = args.length - 1; i >= 0; i--) {
-    switch (args[i]) {
-      case "--write":
-        write = true;
-        args.splice(i, 1);
-        break;
-      case "--all":
-        all = true;
-        args.splice(i, 1);
-        break;
+  for (const arg of args) {
+    if (arg.startsWith("--")) {
+      flags.add(arg);
+    } else {
+      options.push(arg);
     }
   }
 
-  if (args.length == 0) {
-    all = true;
-  }
+  const write = flags.has("--write");
+  const all = flags.has("--all");
 
-  switch (all) {
-    case true:
-      console.log(await contentTemplateTool(write, 5, 3));
-      break;
-
-    case false:
-      for (const arg of args) {
-        switch (arg) {
-          case "ContentTemplate":
-            console.log(await contentTemplateTool(write, 5, 7));
-            break;
-          default:
-            console.log(`No tools to run for ${arg}`);
-        }
+  if (all) {
+    console.log(await contentTemplateTool(write, 5, 3));
+  } else {
+    for (const opt of options) {
+      switch (opt) {
+        case "ContentTemplate":
+          console.log(await contentTemplateTool(write, 5, 7));
+          break;
+        default:
+          console.log(`No tools to run for ${opt}`);
       }
-      break;
+    }
   }
 }
 
 try {
   await run(argv);
-
   console.log("Finished running all tools.");
   process.exit(0);
 } catch (error) {
-  console.error("An error occured while running all tools:", error);
+  console.error("An error occurred while running all tools:", error);
   process.exit(1);
 }
