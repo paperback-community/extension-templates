@@ -1,4 +1,4 @@
-// TODO: Rework to implement state
+// TODO: Rework
 
 import {
   ButtonRow,

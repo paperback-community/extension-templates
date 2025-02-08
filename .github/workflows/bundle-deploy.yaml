@@ -3,14 +3,14 @@ name: Bundle and Deploy
 on:
   push:
     branches:
-      - "*.*/stable"
-      - "*.*/testing"
+      - "*.*/*"
+      - "*.*/*"
 
 permissions:
   contents: write
 
 concurrency:
-  group: ${{ github.ref }}-${{ github.workflow }}
+  group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:

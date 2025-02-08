@@ -1,4 +1,9 @@
-// TODO: Add English name to title view, additional info?
+// TODO:
+// - Add the English name to the title view
+// - Add additional info to the title view
+// - Add share button support to the title view
+// - Add async search filters
+// - Fix exclude search
 
 import {
   BasicRateLimiter,
@@ -49,6 +54,9 @@ class MainInterceptor extends PaperbackInterceptor {
     response: Response,
     data: ArrayBuffer,
   ): Promise<ArrayBuffer> {
+    void request;
+    void response;
+
     return data;
   }
 }
@@ -94,7 +102,7 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
       id: "discover-section-template1",
       title: "Discover Section Template 1",
       subtitle: "This is a template",
-      type: DiscoverSectionType.prominentCarousel,
+      type: DiscoverSectionType.featured,
     };
 
     // Second template discover section, gets populated by the getDiscoverSectionItems method
@@ -102,10 +110,22 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
       id: "discover-section-template2",
       title: "Discover Section Template 2",
       subtitle: "This is another template",
+      type: DiscoverSectionType.prominentCarousel,
+    };
+
+    // Second template discover section, gets populated by the getDiscoverSectionItems method
+    const discover_section_template3: DiscoverSection = {
+      id: "discover-section-template3",
+      title: "Discover Section Template 3",
+      subtitle: "This is yet another template",
       type: DiscoverSectionType.simpleCarousel,
     };
 
-    return [discover_section_template1, discover_section_template2];
+    return [
+      discover_section_template1,
+      discover_section_template2,
+      discover_section_template3,
+    ];
   }
 
   // Populates both the discover sections
@@ -115,21 +135,31 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
   ): Promise<PagedResults<DiscoverSectionItem>> {
     void metadata;
 
-    let i: number;
-    let type: string;
+    let i: number = 0;
+    let j: number = 1;
+    let type:
+      | "featuredCarouselItem"
+      | "simpleCarouselItem"
+      | "prominentCarouselItem"
+      | "chapterUpdatesCarouselItem"
+      | "genresCarouselItem";
     switch (section.id) {
       case "discover-section-template1":
-        i = 0;
-        type = "prominentCarouselItem";
+        j = 2;
+        type = "featuredCarouselItem";
         break;
       case "discover-section-template2":
         i = content.length / 2;
+        j = 2;
+        type = "prominentCarouselItem";
+        break;
+      case "discover-section-template3":
         type = "simpleCarouselItem";
         break;
     }
 
     return {
-      items: Array.from(Array(content.length / 2)).map(() => {
+      items: Array.from(Array(content.length / j)).map(() => {
         const result = {
           mangaId: content[i].titleId,
           title: content[i].primaryTitle
@@ -215,14 +245,11 @@ export class ContentTemplateExtension implements ContentTemplateImplementation {
       if (mangaId == content[i].titleId) {
         let contentRating: ContentRating;
         switch (content[i].contentRating) {
-          case "EVERYONE":
-            contentRating = ContentRating.EVERYONE;
+          case "ADULT":
+            contentRating = ContentRating.ADULT;
             break;
           case "MATURE":
             contentRating = ContentRating.MATURE;
-            break;
-          case "ADULT":
-            contentRating = ContentRating.ADULT;
             break;
           default:
             contentRating = ContentRating.EVERYONE;
