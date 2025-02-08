@@ -1,5 +1,5 @@
 {
-  "name": "extension-templates",
+  "name": "template-extensions",
   "description": "Paperback extensions designed as templates to help developers get started quickly.",
   "author": "Paperback Community",
   "keywords": [
@@ -11,13 +11,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paperback-community/extension-templates.git"
+    "url": "git+https://github.com/paperback-community/template-extensions.git"
   },
   "bugs": {
-    "url": "https://github.com/paperback-community/extension-templates/issues"
+    "url": "https://github.com/paperback-community/template-extensions/issues"
   },
-  "homepage": "https://github.com/paperback-community/extension-templates#readme",
-  "repositoryName": "Paperback Community Templates",
+  "homepage": "https://github.com/paperback-community/template-extensions#readme",
+  "repositoryName": "Template Extensions",
   "repositoryDescription": "Extensions designed as templates to help developers get started quickly. Maintained by the Paperback Community.",
   "private": true,
   "type": "module",
@@ -26,8 +26,6 @@
     "lint:check": "eslint",
     "format": "prettier --write '**/*{.md,.yaml,.json,.js,.ts}'",
     "format:check": "prettier --check '**/*{.md,.yaml,.json,.js,.ts}'",
-    "tools": "rm -rf tools && tsc src/tools/**.ts --outDir tools --target ESNext --module ESNext --moduleResolution bundler --strict true --forceConsistentCasingInFileNames true --skipLibCheck true && node **/tools.js --write",
-    "tools:check": "rm -rf tools && tsc src/tools/**.ts --outDir tools --target ESNext --module ESNext --moduleResolution bundler --strict true --forceConsistentCasingInFileNames true --skipLibCheck true && node **/tools.js",
     "bundle": "paperback-cli bundle",
     "serve": "paperback-cli serve",
     "logcat": "paperback-cli logcat",
