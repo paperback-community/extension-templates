@@ -3038,32 +3038,47 @@ var source = (() => {
         id: "discover-section-template1",
         title: "Discover Section Template 1",
         subtitle: "This is a template",
-        type: import_types2.DiscoverSectionType.prominentCarousel
+        type: import_types2.DiscoverSectionType.featured
       };
       const discover_section_template2 = {
         id: "discover-section-template2",
         title: "Discover Section Template 2",
         subtitle: "This is another template",
+        type: import_types2.DiscoverSectionType.prominentCarousel
+      };
+      const discover_section_template3 = {
+        id: "discover-section-template3",
+        title: "Discover Section Template 3",
+        subtitle: "This is yet another template",
         type: import_types2.DiscoverSectionType.simpleCarousel
       };
-      return [discover_section_template1, discover_section_template2];
+      return [
+        discover_section_template1,
+        discover_section_template2,
+        discover_section_template3
+      ];
     }
     // Populates both the discover sections
     async getDiscoverSectionItems(section, metadata) {
-      let i;
+      let i = 0;
+      let j = 1;
       let type;
       switch (section.id) {
         case "discover-section-template1":
-          i = 0;
-          type = "prominentCarouselItem";
+          j = 2;
+          type = "featuredCarouselItem";
           break;
         case "discover-section-template2":
           i = content_default.length / 2;
+          j = 2;
+          type = "prominentCarouselItem";
+          break;
+        case "discover-section-template3":
           type = "simpleCarouselItem";
           break;
       }
       return {
-        items: Array.from(Array(content_default.length / 2)).map(() => {
+        items: Array.from(Array(content_default.length / j)).map(() => {
           const result = {
             mangaId: content_default[i].titleId,
             title: content_default[i].primaryTitle ? content_default[i].primaryTitle : "Unknown Title",
@@ -3115,14 +3130,11 @@ var source = (() => {
         if (mangaId == content_default[i].titleId) {
           let contentRating;
           switch (content_default[i].contentRating) {
-            case "EVERYONE":
-              contentRating = import_types2.ContentRating.EVERYONE;
+            case "ADULT":
+              contentRating = import_types2.ContentRating.ADULT;
               break;
             case "MATURE":
               contentRating = import_types2.ContentRating.MATURE;
-              break;
-            case "ADULT":
-              contentRating = import_types2.ContentRating.ADULT;
               break;
             default:
               contentRating = import_types2.ContentRating.EVERYONE;
